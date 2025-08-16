@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 interface TaskContextType {
     tasks: Task[];
     currentTask: Task | null;
-    addTask: (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number) => Task;
+    addTask: (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number, scheduledDate: string | null, scheduledTime: string | null) => Task;
     updateTask: (id: string, updatedTask: Partial<Task>) => void;
     deleteTask: (id: string) => void;
     setCurrentTask: (id: string | null) => void;
@@ -41,7 +41,7 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [currentTask]);
 
-    const addTask = (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number) => {
+    const addTask = (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number, scheduledDate: string | null, scheduledTime: string | null) => {
         const newTask: Task = {
             id: uuidv4(),
             name,
@@ -51,6 +51,9 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             repeats,
             completedSessions: 0,
             isCurrent: false,
+            scheduledDate: scheduledDate || undefined,
+            scheduledTime: scheduledTime || undefined,
+            status: 'pending', // Default status
         };
         setTasks((prevTasks) => [...prevTasks, newTask]);
         return newTask;

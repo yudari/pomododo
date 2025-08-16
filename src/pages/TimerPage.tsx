@@ -12,7 +12,7 @@ const TimerPageContainer = styled(motion.div)`
   padding: 20px;
 `;
 
-const PomodoroCard = styled(motion.div)`
+const PomododoCard = styled(motion.div)`
   background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 20px;
   padding: 40px;
@@ -113,11 +113,11 @@ type TimerType = 'work' | 'shortBreak' | 'longBreak';
 const TimerPage: React.FC = () => {
     const { currentTask, updateTask } = useTasks();
     const [timer, setTimer] = useState<number>(() => {
-        const savedTimer = localStorage.getItem('pomodoroTimer');
+        const savedTimer = localStorage.getItem('pomododoTimer');
         return savedTimer ? parseInt(savedTimer) : (currentTask?.focusTime || 25) * 60;
     });
     const [timerType, setTimerType] = useState<TimerType>(() => {
-        const savedTimerType = localStorage.getItem('pomodoroTimerType');
+        const savedTimerType = localStorage.getItem('pomododoTimerType');
         return (savedTimerType as TimerType) || 'work';
     });
     const [isRunning, setIsRunning] = useState(false);
@@ -141,7 +141,7 @@ const TimerPage: React.FC = () => {
         // Only set timer if it's currently 0 (e.g., after a session completes) or if it's the initial load
         // This prevents resetting the timer when pausing
         if (timer === 0 || !isRunning) { // Check if timer is 0 or not running (initial load/reset)
-            const savedTimer = localStorage.getItem('pomodoroTimer');
+            const savedTimer = localStorage.getItem('pomododoTimer');
             if (savedTimer && parseInt(savedTimer) > 0 && !isRunning) {
                 setTimer(parseInt(savedTimer));
             } else {
@@ -207,8 +207,8 @@ const TimerPage: React.FC = () => {
 
     // Save timer state to localStorage whenever timer or timerType changes
     useEffect(() => {
-        localStorage.setItem('pomodoroTimer', timer.toString());
-        localStorage.setItem('pomodoroTimerType', timerType);
+        localStorage.setItem('pomododoTimer', timer.toString());
+        localStorage.setItem('pomododoTimerType', timerType);
     }, [timer, timerType]);
 
     const formatTime = (seconds: number) => {
@@ -223,8 +223,8 @@ const TimerPage: React.FC = () => {
         setIsRunning(false);
         setTimerType('work');
         setTimer((currentTask?.focusTime || 25) * 60);
-        localStorage.setItem('pomodoroTimer', ((currentTask?.focusTime || 25) * 60).toString());
-        localStorage.setItem('pomodoroTimerType', 'work');
+        localStorage.setItem('pomododoTimer', ((currentTask?.focusTime || 25) * 60).toString());
+        localStorage.setItem('pomododoTimerType', 'work');
     };
 
     const progressPercentage = currentTask
@@ -237,13 +237,23 @@ const TimerPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <PomodoroCard
+            <PomododoCard
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 100, damping: 10 }}
             >
-                <Title>Pomodoro Timer</Title>
-                {currentTask && <p>Current Task: {currentTask.name}</p>}
+                <Title>Pomododo Timer</Title>
+                {currentTask && (
+                    <p>
+                        Current Task: {currentTask.name}
+                        {currentTask.status === 'overdue' && (
+                            <span style={{ color: 'red', marginLeft: '10px' }}> (Overdue!)</span>
+                        )}
+                        {currentTask.status === 'completed' && (
+                            <span style={{ color: 'green', marginLeft: '10px' }}> (Completed!)</span>
+                        )}
+                    </p>
+                )}
                 <TimerDisplay
                     key={timer}
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -276,7 +286,7 @@ const TimerPage: React.FC = () => {
                         />
                     </ProgressBarContainer>
                 </ProgressTracker>
-            </PomodoroCard>
+            </PomododoCard>
         </TimerPageContainer>
     );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { useGoogleCalendar } from '../contexts/GoogleCalendarContext';
+// import { useGoogleCalendar } from '../contexts/GoogleCalendarContext'; // Removed as Google Calendar integration is being replaced
 
 const SettingsPageContainer = styled(motion.div)`
   padding: 20px;
@@ -78,14 +78,14 @@ interface SettingsPageProps {
 }
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ setTheme, currentThemeName, availableThemes }) => {
-    const { isAuthenticated, signIn, signOut } = useGoogleCalendar();
+    // const { isAuthenticated, signIn, signOut } = useGoogleCalendar(); // Removed as Google Calendar integration is being replaced
     const [settings, setSettings] = useState<Settings>(() => {
-        const savedSettings = localStorage.getItem('pomodoroSettings');
+        const savedSettings = localStorage.getItem('pomododoSettings');
         return savedSettings ? JSON.parse(savedSettings) : { work: 25, shortBreak: 5, longBreak: 15 };
     });
 
     useEffect(() => {
-        localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
+        localStorage.setItem('pomododoSettings', JSON.stringify(settings));
     }, [settings]);
 
     const handleSettingChange = (type: keyof Settings, value: number) => {
@@ -151,22 +151,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ setTheme, currentThemeName,
                             </option>
                         ))}
                     </select>
-                </SettingItem>
-            </SettingsSection>
-
-            <SettingsSection style={{ marginTop: '20px' }}>
-                <h2>Google Calendar Integration</h2>
-                <SettingItem>
-                    Google Calendar:
-                    {isAuthenticated ? (
-                        <ToggleButton whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={signOut}>
-                            Sign Out
-                        </ToggleButton>
-                    ) : (
-                        <ToggleButton whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={signIn}>
-                            Sign In
-                        </ToggleButton>
-                    )}
                 </SettingItem>
             </SettingsSection>
         </SettingsPageContainer>

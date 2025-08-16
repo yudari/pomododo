@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useTasks } from '../contexts/TaskContext';
-import { useGoogleCalendar } from '../contexts/GoogleCalendarContext';
+import { useCalendar } from '../contexts/CalendarContext';
 import type { Task } from '../types/task';
 import { FaEdit, FaTimes, FaPlus } from 'react-icons/fa';
 import EditTaskModal from '../components/EditTaskModal'; // Will create this next
@@ -48,6 +48,13 @@ const AddButton = styled(motion.button)`
 
 const TaskSection = styled.div`
   margin-bottom: 30px;
+  max-height: 300px;
+  overflow-y: scroll;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -129,7 +136,7 @@ const NoTasksMessage = styled.p`
 
 const TasksPage: React.FC = () => {
     const { tasks, currentTask, deleteTask, setCurrentTask, addTask } = useTasks();
-    const { createCalendarEvent } = useGoogleCalendar();
+    // const { createCalendarEvent } = useCalendar(); // This functionality will be removed or re-implemented with FullCalendar
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [scheduleInCalendar, setScheduleInCalendar] = useState(false);
@@ -144,20 +151,13 @@ const TasksPage: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleAddTask = async (taskName: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number, scheduleInCalendar: boolean) => {
-        addTask(taskName, focusTime, shortBreak, longBreak, repeats);
+    const handleAddTask = async (taskName: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number, scheduledDate: string | null, scheduledTime: string | null, scheduleInCalendar: boolean) => {
+        addTask(taskName, focusTime, shortBreak, longBreak, repeats, scheduledDate, scheduledTime);
 
-        if (scheduleInCalendar) {
-            const now = new Date();
-            const startTime = new Date(now.getTime());
-            const endTime = new Date(now.getTime() + focusTime * 60 * 1000); // Focus time in milliseconds
-            await createCalendarEvent(
-                `Pomodoro: ${taskName}`,
-                `Focus session for ${taskName}`,
-                startTime,
-                endTime
-            );
-        }
+        // FullCalendar integration for event creation will be handled differently,
+        // likely through a separate component or direct FullCalendar API calls.
+        // The `scheduleInCalendar` logic will need to be re-evaluated based on
+        // how FullCalendar is integrated into the application.
     };
 
     const handleCloseModal = () => {
@@ -263,7 +263,7 @@ const TasksPage: React.FC = () => {
                     <EditTaskModal
                         task={editingTask}
                         onClose={handleCloseModal}
-                        onAddTask={(taskName, focusTime, shortBreak, longBreak, repeats) => handleAddTask(taskName, focusTime, shortBreak, longBreak, repeats, scheduleInCalendar)}
+                        onAddTask={(taskName, focusTime, shortBreak, longBreak, repeats, scheduledDate, scheduledTime) => handleAddTask(taskName, focusTime, shortBreak, longBreak, repeats, scheduledDate, scheduledTime, scheduleInCalendar)}
                         scheduleInCalendar={scheduleInCalendar}
                         setScheduleInCalendar={setScheduleInCalendar}
                     />

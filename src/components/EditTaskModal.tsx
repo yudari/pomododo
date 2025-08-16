@@ -7,7 +7,7 @@ import type { Task } from '../types/task';
 interface EditTaskModalProps {
     task: Task | null;
     onClose: () => void;
-    onAddTask: (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number) => Promise<void>;
+    onAddTask: (name: string, focusTime: number, shortBreak: number, longBreak: number, repeats: number, scheduledDate: string | null, scheduledTime: string | null) => Promise<void>;
     scheduleInCalendar: boolean;
     setScheduleInCalendar: (value: boolean) => void;
 }
@@ -123,6 +123,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onAddTask,
     const [longBreak, setLongBreak] = useState(task?.longBreak || 15);
     const [repeats, setRepeats] = useState(task?.repeats || 4);
     const [isCurrent, setIsCurrent] = useState(task?.isCurrent || false);
+    const [scheduledDate, setScheduledDate] = useState(task?.scheduledDate || '');
+    const [scheduledTime, setScheduledTime] = useState(task?.scheduledTime || '');
 
     useEffect(() => {
         if (task) {
@@ -132,6 +134,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onAddTask,
             setLongBreak(task.longBreak);
             setRepeats(task.repeats);
             setIsCurrent(task.isCurrent);
+            setScheduledDate(task.scheduledDate || '');
+            setScheduledTime(task.scheduledTime || '');
         } else {
             // Reset form for new task
             setName('');
@@ -140,19 +144,21 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onAddTask,
             setLongBreak(15);
             setRepeats(4);
             setIsCurrent(false);
+            setScheduledDate('');
+            setScheduledTime('');
         }
     }, [task]);
 
     const handleSubmit = async () => {
         if (task) {
-            updateTask(task.id, { name, focusTime, shortBreak, longBreak, repeats });
+            updateTask(task.id, { name, focusTime, shortBreak, longBreak, repeats, scheduledDate, scheduledTime });
             if (isCurrent) {
                 setCurrentTask(task.id);
             } else if (task.isCurrent && !isCurrent) {
                 setCurrentTask(null);
             }
         } else {
-            await onAddTask(name, focusTime, shortBreak, longBreak, repeats);
+            await onAddTask(name, focusTime, shortBreak, longBreak, repeats, scheduledDate, scheduledTime);
             // The onAddTask function now handles setting the current task if needed
         }
         onClose();
@@ -229,6 +235,26 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onAddTask,
                     />
                 </InputGroup>
 
+                <InputGroup>
+                    <Label htmlFor="scheduledDate">Schedule Date</Label>
+                    <Input
+                        id="scheduledDate"
+                        type="date"
+                        value={scheduledDate}
+                        onChange={(e) => setScheduledDate(e.target.value)}
+                    />
+                </InputGroup>
+
+                <InputGroup>
+                    <Label htmlFor="scheduledTime">Schedule Time</Label>
+                    <Input
+                        id="scheduledTime"
+                        type="time"
+                        value={scheduledTime}
+                        onChange={(e) => setScheduledTime(e.target.value)}
+                    />
+                </InputGroup>
+
                 <CheckboxGroup>
                     <Checkbox
                         id="isCurrent"
@@ -247,7 +273,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, onClose, onAddTask,
                             checked={scheduleInCalendar}
                             onChange={(e) => setScheduleInCalendar(e.target.checked)}
                         />
-                        <Label htmlFor="scheduleInCalendar">Schedule in Google Calendar</Label>
+                        <Label htmlFor="scheduleInCalendar">Schedule in Calendar</Label>
                     </CheckboxGroup>
                 )}
 

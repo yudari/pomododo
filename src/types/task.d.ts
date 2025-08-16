@@ -7,4 +7,7 @@ export interface Task {
     repeats: number;
     completedSessions: number;
     isCurrent: boolean;
+    scheduledDate?: string; // YYYY-MM-DD
+    scheduledTime?: string; // HH:MM
+    status?: 'pending' | 'completed' | 'overdue';
 }

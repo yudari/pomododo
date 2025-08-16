@@ -3,11 +3,12 @@ import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { motion } from 'framer-motion';
 import { BrowserRouter as Router, Route, Routes, NavLink as RouterNavLink } from 'react-router-dom';
 import { TaskProvider } from './contexts/TaskContext';
-import { GoogleCalendarProvider } from './contexts/GoogleCalendarContext';
+import { CalendarProvider } from './contexts/CalendarContext';
 import TasksPage from './pages/TasksPage';
 import TimerPage from './pages/TimerPage';
 import SettingsPage from './pages/SettingsPage';
-import { FaTasks, FaClock, FaCog } from 'react-icons/fa';
+import CalendarPage from './pages/CalendarPage';
+import { FaTasks, FaClock, FaCog, FaCalendarAlt } from 'react-icons/fa';
 
 // Define themes
 const themes = {
@@ -101,7 +102,7 @@ const AppContainer = styled(motion.div)`
   @media (max-width: 768px) {
     width: 100%;
   }
-  padding: 20px;
+  padding: 0px;
   background-color: ${({ theme }) => theme.background};
   transition: background-color 0.3s ease;
 `;
@@ -111,7 +112,6 @@ const MainContent = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
 `;
 
 const Navbar = styled(motion.nav)`
@@ -177,7 +177,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={currentTheme}>
       <GlobalStyle />
       <TaskProvider>
-        <GoogleCalendarProvider>
+        <CalendarProvider>
           <Router>
             <AppContainer
               initial={{ opacity: 0 }}
@@ -188,6 +188,7 @@ const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<TimerPage />} />
                   <Route path="/tasks" element={<TasksPage />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
                   <Route path="/settings" element={<SettingsPage setTheme={setTheme} currentThemeName={theme} availableThemes={Object.keys(themes)} />} />
                 </Routes>
               </MainContent>
@@ -205,6 +206,10 @@ const App: React.FC = () => {
                   <FaClock />
                   Timer
                 </NavLink>
+                <NavLink to="/calendar">
+                  <FaCalendarAlt />
+                  Calendar
+                </NavLink>
                 <NavLink to="/settings">
                   <FaCog />
                   Settings
@@ -212,7 +217,7 @@ const App: React.FC = () => {
               </Navbar>
             </AppContainer>
           </Router>
-        </GoogleCalendarProvider>
+        </CalendarProvider>
       </TaskProvider>
     </ThemeProvider>
   );
